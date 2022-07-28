@@ -1,15 +1,14 @@
-## For the first time (fresh installation)
-- ./vendor/bin/sail up
-- ./vendor/bin/sail artisan migrate
-- nvm use && npm i && npm run dev
+### Prerequisite
+- [Docker](https://docs.docker.com/engine/install/ubuntu/)
+- [NVM](https://github.com/nvm-sh/nvm) or [Node.js 16](https://nodejs.org/en/download/)
 
-## Insert Seed data
-- ./vendor/bin/sail artisan db:seed --class=PersonSeeder
+### Get Started (locally)
+- Clone and go to project root folder
+- Run `./vendor/bin/sail up`
+- After service up an running execute `./vendor/bin/sail artisan migrate`
+- To add seed data run `./vendor/bin/sail artisan db:seed --class=PersonSeeder`
+- On another terminal run `nvm use && npm i && npm run dev`
+- Open http://localhost 
 
-## Query builder
-- https://stackoverflow.com/questions/24555025/how-to-customize-laravels-database-query-builder-make-better-subquery
-
-## Redis pagination
-- https://redis.io/docs/reference/patterns/twitter-clone/#paginating-updates
-- https://redis.com/redis-best-practices/time-series/sorted-set-time-series/
-- https://hotexamples.com/site/file?hash=0xf85e82e94424a923bca9633adfb59707f0fc24cf78cd5cf88ba2aa68f5ddcf5a&fullName=src/TaskQueue/Queue/Redis/RedisQueue.php&project=rybakit/taskqueue
+### This is how it looks like
+<img src="./screencapture.png" />
