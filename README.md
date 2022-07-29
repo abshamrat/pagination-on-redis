@@ -11,4 +11,5 @@
 - Open http://localhost 
 
 ### Demo video
-<video src="./demo.mp4" width="480" />
+https://user-images.githubusercontent.com/12497649/181757312-0b179182-4054-48af-8d55-0fad54c25a30.mp4
+
