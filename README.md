@@ -10,5 +10,5 @@
 - On another terminal run `nvm use && npm i && npm run dev`
 - Open http://localhost 
 
-### This is how it looks like
-<img src="./screencapture.png" />
+### Demo video
+<video src="./demo.mp4" width="480" />
