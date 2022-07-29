@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Jobs\PopulateFilteredPeopleToRedis;
 use App\Models\Person;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Database\Eloquent\Builder;
@@ -12,7 +13,6 @@ use Rappasoft\LaravelLivewireTables\Views\Filters\NumberFilter;
 
 class PeopleTable extends DataTableComponent
 {
-
     protected $model = Person::class;
     protected $previousFilterKey = "people:previousFilterKey";
     protected $totalFilteredRecordKey = "people:totalFilteredRecordKey";
@@ -48,29 +48,16 @@ class PeopleTable extends DataTableComponent
         $start = ($this->page - 1) * $this->getPerPage();
         $end = $start + $this->getPerPage();
 
-        $rows = Redis::zrange($key, $start, $end);
+        $records = Redis::zrange($key, $start, $end);
             
-        for($i=0; $i < count($rows); $i++) {
-            $rows[$i] = json_decode($rows[$i], true);
+        for($i=0; $i < count($records); $i++) {
+            $records[$i] = json_decode($records[$i], true);
         }
-        return Person::hydrate($rows);
-    }
-
-    public function populateRecordsToRedis($records) {
-        $data = array();
-        $key = $this->filterRecordKey();
-        foreach($records as $row) {
-            $data[json_encode($row)] = $row->id;
-        }
-
-        Redis::set($this->totalFilteredRecordKey, count($records));
-        Redis::expire($this->totalFilteredRecordKey, 60);
-
-        Redis::zadd($key, $data);
-        Redis::expire($key, 60);
+        return Person::hydrate($records);
     }
 
     public function getPaginator($records) {
+        // Could use zCount, which has complexity O(log(N)), on get we have O(1) 
         $total = Redis::get($this->totalFilteredRecordKey);
         return new LengthAwarePaginator(
             $records,
@@ -122,7 +109,11 @@ class PeopleTable extends DataTableComponent
             $records = $this->getRecordsFromRedis();
         } else {
             $records=$this->getExecutedQueryResult(false);
-            $this->populateRecordsToRedis($records);
+            PopulateFilteredPeopleToRedis::dispatch(
+                $records, 
+                $this->filterRecordKey(), 
+                $this->totalFilteredRecordKey
+            );
             $records = $records->splice(0, 20);
         }
 
